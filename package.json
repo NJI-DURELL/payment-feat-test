@@ -1,0 +1,14 @@
+{
+  "name": "payment-test",
+  "version": "1.0.0",
+  "description": "Payment Testing Suite with Whop Integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@whop/sdk": "^1.1.0",
+    "dotenv": "^16.4.5"
+  }
+}

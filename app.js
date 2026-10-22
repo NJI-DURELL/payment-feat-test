@@ -451,12 +451,69 @@ function validateForm() {
   return valid;
 }
 
+// ─── Whop API Integration ─────────────────────────────────────────
+async function payWithWhop() {
+  const { grand } = computeTotals();
+  startProcessing();
+  showToast('Connecting to Whop API…', 'info');
+
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount: grand,
+        email: $('email')?.value || '',
+        plan_type: 'one_time'
+      })
+    });
+
+    const data = await res.json();
+    stopProcessing();
+
+    if (!res.ok || !data.purchase_url) {
+      throw new Error(data.error || 'Failed to generate Whop purchase URL');
+    }
+
+    console.log('[Whop Checkout] Redirecting to:', data.purchase_url);
+    showToast('Redirecting to Whop Checkout…', 'success');
+
+    // Record transaction in history
+    const ref = data.variant_id ? `WHOP-${data.variant_id}` : generateRef();
+    const tx = {
+      ref,
+      amount: grand,
+      currency: state.currency,
+      method: 'whop',
+      scenario: 'success',
+      name: `${$('firstName').value} ${$('lastName').value}`.trim() || 'Whop Customer',
+      time: new Date(),
+    };
+    state.transactions.unshift(tx);
+
+    // Open purchase URL in new window or redirect
+    const win = window.open(data.purchase_url, '_blank');
+    if (!win) {
+      window.location.href = data.purchase_url;
+    }
+  } catch (err) {
+    stopProcessing();
+    showFail('Whop Checkout Failed', 'WHOP_API_ERROR', err.message);
+  }
+}
+
 // ─── Payment Processing ───────────────────────────────────────────
 function pay() {
   if (state.isBusy) return;
   if (!validateForm()) {
     showToast('Please fix the form errors.', 'error');
     document.querySelector('.error')?.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  // Handle Whop Checkout method
+  if (state.method === 'whop') {
+    payWithWhop();
     return;
   }
 
@@ -499,7 +556,7 @@ function stopProcessing() {
   btn.querySelector('.pay-btn-loading').classList.add('hidden');
 }
 
-function showSuccess() {
+async function showSuccess() {
   const { grand } = computeTotals();
   const ref = generateRef();
   const tx = {
@@ -561,7 +618,13 @@ function generateRef() {
 }
 
 function methodLabel() {
-  const labels = { card:'Credit/Debit Card', bank:'Bank Transfer', wallet: state.wallet || 'Digital Wallet', crypto:'Crypto' };
+  const labels = {
+    card: 'Credit/Debit Card',
+    bank: 'Bank Transfer',
+    wallet: state.wallet || 'Digital Wallet',
+    crypto: 'Crypto',
+    whop: 'Whop Checkout'
+  };
   return labels[state.method] || state.method;
 }
 

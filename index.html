@@ -209,6 +209,10 @@
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 8h4a2 2 0 1 1 0 4H9v4h5a2 2 0 1 1 0 4"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="18" x2="12" y2="20"/></svg>
             Crypto
           </button>
+          <button class="method-tab" id="tab-whop" role="tab" aria-selected="false" data-method="whop">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            Whop
+          </button>
         </div>
 
         <!-- ── CARD PANEL ── -->
@@ -434,6 +438,48 @@
           </div>
           <div class="crypto-panel-inner" id="cryptoPanelInner">
             <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- ── WHOP PANEL ── -->
+        <div class="method-panel" id="panel-whop">
+          <div class="whop-panel-card">
+            <div class="whop-badge">⚡ Universal Multi-Platform Checkout</div>
+            <h4 class="whop-title">Fast &amp; Secure Checkout for All Devices &amp; OS</h4>
+            <p class="whop-desc">
+              Works seamlessly across <strong>Windows, Android, iOS, macOS, Linux, and all modern web browsers</strong>. Clicking <strong>Pay</strong> creates a dynamic checkout variant via <code>@whop/sdk</code> on your secure backend and redirects to Whop's universal checkout.
+            </p>
+
+            <div class="whop-platform-pills">
+              <span class="whop-pill">🪟 Windows</span>
+              <span class="whop-pill">🤖 Android</span>
+              <span class="whop-pill">🍎 iOS &amp; Mac</span>
+              <span class="whop-pill">🌐 Any Web Browser</span>
+            </div>
+
+            <div class="whop-features-grid">
+              <div class="whop-feat-item">
+                <span class="whop-feat-icon">💳</span>
+                <span>Visa, MC, Amex, Discover</span>
+              </div>
+              <div class="whop-feat-item">
+                <span class="whop-feat-icon">🌐</span>
+                <span>Google Pay &amp; Apple Pay</span>
+              </div>
+              <div class="whop-feat-item">
+                <span class="whop-feat-icon">🅿️</span>
+                <span>PayPal &amp; Cash App</span>
+              </div>
+              <div class="whop-feat-item">
+                <span class="whop-feat-icon">🪙</span>
+                <span>Crypto &amp; Global Currencies</span>
+              </div>
+            </div>
+
+            <div class="whop-notice">
+              <span>ℹ️</span>
+              <span>Backend configured: Set <code>WHOP_API_KEY</code>, <code>WHOP_ACCOUNT_ID</code>, and <code>WHOP_PRODUCT_ID</code> in <code>.env</code></span>
+            </div>
           </div>
         </div>
       </div>

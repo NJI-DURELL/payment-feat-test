@@ -574,7 +574,6 @@ input.valid { border-color:rgba(74,222,128,0.4); }
 .installment-display.visible { display:block; }
 
 /* ── Scenario Card ───────────────────────────── */
-.scenario-card { }
 .scenario-desc { font-size:13px;color:var(--text-muted);margin-bottom:16px; }
 .scenario-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }
 @media(max-width:480px){ .scenario-grid{ grid-template-columns:1fr 1fr; } }
@@ -816,3 +815,91 @@ input.valid { border-color:rgba(74,222,128,0.4); }
 ::-webkit-scrollbar-track { background:transparent; }
 ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12);border-radius:3px; }
 ::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,.2); }
+
+/* ── Whop Checkout Panel ──────────────────────── */
+.whop-panel-card {
+  background: linear-gradient(145deg, rgba(255, 98, 0, 0.08) 0%, rgba(167, 139, 250, 0.06) 100%);
+  border: 1px solid rgba(255, 98, 0, 0.25);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.whop-badge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #ff8a3d;
+  background: rgba(255, 98, 0, 0.15);
+  border: 1px solid rgba(255, 98, 0, 0.35);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.whop-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+.whop-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.whop-platform-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0;
+}
+.whop-pill {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #c4b5fd;
+  background: rgba(167, 139, 250, 0.12);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.whop-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 6px;
+}
+.whop-feat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  color: var(--text);
+}
+.whop-feat-icon {
+  font-size: 14px;
+}
+.whop-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  margin-top: 4px;
+}
+.whop-notice code {
+  color: var(--blue);
+  background: rgba(79, 195, 247, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
