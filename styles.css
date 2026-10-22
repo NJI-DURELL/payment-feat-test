@@ -903,3 +903,87 @@ input.valid { border-color:rgba(74,222,128,0.4); }
   padding: 2px 6px;
   border-radius: 4px;
 }
+
+/* ── Whop Elements Controls ──────────────────── */
+.whop-mode-selector {
+  display: flex;
+  gap: 8px;
+  margin: 6px 0;
+}
+.whop-mode-btn {
+  flex: 1;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.whop-mode-btn:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+.whop-mode-btn.active {
+  background: rgba(255, 98, 0, 0.15);
+  border-color: rgba(255, 98, 0, 0.45);
+  color: #ff9d54;
+}
+.whop-plan-config {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.whop-plan-config label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.whop-input-row {
+  display: flex;
+  gap: 8px;
+}
+.whop-input-row input {
+  flex: 1;
+}
+.whop-elements-mount {
+  min-height: 200px;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.whop-placeholder {
+  text-align: center;
+  max-width: 380px;
+  padding: 20px 10px;
+}
+.whop-ph-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.whop-ph-title {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.whop-ph-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+.whop-ph-desc code {
+  color: var(--blue);
+  background: rgba(79, 195, 247, 0.1);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+

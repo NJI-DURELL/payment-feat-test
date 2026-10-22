@@ -24,6 +24,7 @@ const state = {
   cardType: 'unknown',
   cvvVisible: false,
   cryptoCoin: 'btc',
+  whopMode: 'embed',
   isBusy: false,
 };
 
@@ -76,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bindEvents();
   updatePayBtn();
   updateInstallmentDisplay();
+  checkUrlPaymentStatus();
 });
 
 // ─── Particles ───────────────────────────────────────────────────
@@ -451,7 +453,94 @@ function validateForm() {
   return valid;
 }
 
-// ─── Whop API Integration ─────────────────────────────────────────
+// ─── Whop API & Elements Integration ──────────────────────────────
+let whopCheckoutInstance = null;
+
+function mountWhopElements(planId) {
+  const container = $('checkout-checkout');
+  if (!container) return;
+
+  const plan = planId || $('whopPlanInput')?.value.trim();
+  if (!plan) {
+    showToast('Please enter a Whop plan ID (e.g. plan_xxxx)', 'warn');
+    $('whopPlanInput')?.focus();
+    return;
+  }
+
+  if (typeof window.WhopElements !== 'function') {
+    showToast('Whop Elements SDK loading, please try again in a moment…', 'info');
+    return;
+  }
+
+  try {
+    if (whopCheckoutInstance) {
+      try { whopCheckoutInstance.destroy(); } catch (_) {}
+      whopCheckoutInstance = null;
+    }
+
+    container.innerHTML = '';
+    const whop = window.WhopElements();
+    whopCheckoutInstance = whop.checkout.create({
+      plan,
+      returnUrl: window.location.origin + window.location.pathname,
+      appearance: { theme: 'dark' },
+      onComplete(res) {
+        console.log('[Whop Elements] Payment completed:', res);
+        showToast('Whop payment completed!', 'success');
+        showSuccess();
+      },
+      onLoadingChange(loading) {
+        console.log('[Whop Elements] Loading state:', loading);
+      }
+    });
+
+    whopCheckoutInstance.create('checkout').mount('#checkout-checkout');
+    showToast('Whop Elements mounted successfully!', 'success');
+  } catch (err) {
+    console.error('[Whop Elements Mount Error]:', err);
+    showToast('Failed to mount Whop Elements: ' + err.message, 'error');
+  }
+}
+
+// Parse returnUrl parameters (status=succeeded|failed|canceled&payment=pay_xxx)
+function checkUrlPaymentStatus() {
+  const params = new URLSearchParams(window.location.search);
+  const status = params.get('status');
+  const payment = params.get('payment');
+  const setup = params.get('setup');
+
+  if (status === 'succeeded' && (payment || setup)) {
+    const ref = payment || setup || generateRef();
+    const { grand } = computeTotals();
+    state.transactions.unshift({
+      ref,
+      amount: grand,
+      currency: state.currency,
+      method: 'whop',
+      scenario: 'success',
+      name: 'Whop Customer',
+      time: new Date(),
+    });
+    $('successMsg').textContent = `Payment confirmed via Whop!`;
+    $('successDetails').innerHTML = `
+      <div class="det-row"><span>Payment ID</span><span class="det-val">${ref}</span></div>
+      <div class="det-row"><span>Status</span><span class="det-val" style="color:var(--green)">SUCCEEDED</span></div>
+      <div class="det-row"><span>Method</span><span class="det-val">Whop Checkout</span></div>
+      <div class="det-row"><span>Time</span><span class="det-val">${new Date().toLocaleTimeString()}</span></div>
+    `;
+    showModal('modalSuccess');
+    showToast('Whop payment succeeded!', 'success');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else if (status === 'failed' || status === 'canceled') {
+    showFail(
+      'Whop Payment ' + (status === 'canceled' ? 'Canceled' : 'Failed'),
+      'WHOP_' + status.toUpperCase(),
+      'The payment session was not completed.'
+    );
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
+
 async function payWithWhop() {
   const { grand } = computeTotals();
   startProcessing();
@@ -513,6 +602,20 @@ function pay() {
 
   // Handle Whop Checkout method
   if (state.method === 'whop') {
+    if (state.whopMode === 'embed') {
+      const plan = $('whopPlanInput')?.value.trim();
+      if (!plan) {
+        showToast('Please enter your Plan ID and click Mount', 'warn');
+        $('whopPlanInput')?.focus();
+        return;
+      }
+      if (!whopCheckoutInstance) {
+        mountWhopElements(plan);
+        return;
+      }
+      showToast('Please complete payment inside the Whop checkout form above', 'info');
+      return;
+    }
     payWithWhop();
     return;
   }
@@ -752,6 +855,27 @@ function bindEvents() {
   // Method tabs
   $$('.method-tab').forEach(tab => {
     tab.addEventListener('click', () => switchMethod(tab.dataset.method));
+  });
+
+  // Whop Mode toggles
+  $('whopModeEmbed')?.addEventListener('click', () => {
+    state.whopMode = 'embed';
+    $('whopModeEmbed').classList.add('active');
+    $('whopModeHosted').classList.remove('active');
+    $('whopEmbedSection').classList.remove('hidden');
+    $('whopHostedSection').classList.add('hidden');
+  });
+
+  $('whopModeHosted')?.addEventListener('click', () => {
+    state.whopMode = 'hosted';
+    $('whopModeHosted').classList.add('active');
+    $('whopModeEmbed').classList.remove('active');
+    $('whopHostedSection').classList.remove('hidden');
+    $('whopEmbedSection').classList.add('hidden');
+  });
+
+  $('btnMountWhopElement')?.addEventListener('click', () => {
+    mountWhopElements();
   });
 
   // Promo

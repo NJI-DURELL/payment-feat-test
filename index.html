@@ -444,41 +444,76 @@
         <!-- ── WHOP PANEL ── -->
         <div class="method-panel" id="panel-whop">
           <div class="whop-panel-card">
-            <div class="whop-badge">⚡ Universal Multi-Platform Checkout</div>
+            <div class="whop-badge">⚡ Whop Elements &amp; Hosted Checkout</div>
             <h4 class="whop-title">Fast &amp; Secure Checkout for All Devices &amp; OS</h4>
             <p class="whop-desc">
-              Works seamlessly across <strong>Windows, Android, iOS, macOS, Linux, and all modern web browsers</strong>. Clicking <strong>Pay</strong> creates a dynamic checkout variant via <code>@whop/sdk</code> on your secure backend and redirects to Whop's universal checkout.
+              Powered by official <strong>Whop Elements</strong> and <code>@whop/sdk</code>. Run in-page embedded checkout or redirect to Whop's hosted checkout.
             </p>
 
             <div class="whop-platform-pills">
               <span class="whop-pill">🪟 Windows</span>
               <span class="whop-pill">🤖 Android</span>
               <span class="whop-pill">🍎 iOS &amp; Mac</span>
-              <span class="whop-pill">🌐 Any Web Browser</span>
+              <span class="whop-pill">🌐 All Browsers</span>
             </div>
 
-            <div class="whop-features-grid">
-              <div class="whop-feat-item">
-                <span class="whop-feat-icon">💳</span>
-                <span>Visa, MC, Amex, Discover</span>
+            <!-- Mode Selector -->
+            <div class="whop-mode-selector">
+              <button class="whop-mode-btn active" id="whopModeEmbed" type="button">
+                📦 Embedded Whop Elements
+              </button>
+              <button class="whop-mode-btn" id="whopModeHosted" type="button">
+                🚀 Hosted Redirect Checkout
+              </button>
+            </div>
+
+            <!-- Embedded Mode Container -->
+            <div id="whopEmbedSection" class="whop-section">
+              <div class="whop-plan-config">
+                <label for="whopPlanInput">Plan ID (from Whop Dashboard &gt; Products &gt; Plans)</label>
+                <div class="whop-input-row">
+                  <input type="text" id="whopPlanInput" class="promo-input" placeholder="e.g. plan_xxxxxxxxxxxx" />
+                  <button type="button" class="btn-apply" id="btnMountWhopElement">Mount</button>
+                </div>
               </div>
-              <div class="whop-feat-item">
-                <span class="whop-feat-icon">🌐</span>
-                <span>Google Pay &amp; Apple Pay</span>
-              </div>
-              <div class="whop-feat-item">
-                <span class="whop-feat-icon">🅿️</span>
-                <span>PayPal &amp; Cash App</span>
-              </div>
-              <div class="whop-feat-item">
-                <span class="whop-feat-icon">🪙</span>
-                <span>Crypto &amp; Global Currencies</span>
+              
+              <!-- Container where Whop Elements mounts -->
+              <div id="checkout-checkout" class="whop-elements-mount">
+                <div class="whop-placeholder" id="whopPlaceholder">
+                  <div class="whop-ph-icon">⚡</div>
+                  <div class="whop-ph-title">Whop Elements Surface</div>
+                  <p class="whop-ph-desc">
+                    Enter your <code>plan_...</code> above and click <strong>Mount</strong> to load the in-page checkout, or click <strong>Pay</strong> below for hosted checkout.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div class="whop-notice">
-              <span>ℹ️</span>
-              <span>Backend configured: Set <code>WHOP_API_KEY</code>, <code>WHOP_ACCOUNT_ID</code>, and <code>WHOP_PRODUCT_ID</code> in <code>.env</code></span>
+            <!-- Hosted Mode Container -->
+            <div id="whopHostedSection" class="whop-section hidden">
+              <div class="whop-features-grid">
+                <div class="whop-feat-item">
+                  <span class="whop-feat-icon">💳</span>
+                  <span>Visa, MC, Amex, Discover</span>
+                </div>
+                <div class="whop-feat-item">
+                  <span class="whop-feat-icon">🌐</span>
+                  <span>Google Pay &amp; Apple Pay</span>
+                </div>
+                <div class="whop-feat-item">
+                  <span class="whop-feat-icon">🅿️</span>
+                  <span>PayPal &amp; Cash App</span>
+                </div>
+                <div class="whop-feat-item">
+                  <span class="whop-feat-icon">🪙</span>
+                  <span>Crypto &amp; Global Currencies</span>
+                </div>
+              </div>
+
+              <div class="whop-notice">
+                <span>ℹ️</span>
+                <span>Clicking <strong>Pay</strong> below uses <code>@whop/sdk</code> on your backend to create a dynamic variant and redirect.</span>
+              </div>
             </div>
           </div>
         </div>
@@ -668,6 +703,7 @@
   <!-- ─── Toast Notification ───────────────────────────────── -->
   <div class="toast-container" id="toastContainer"></div>
 
+  <script src="https://cdn.whop.com/elements/amber/elements.js" data-whop-elements></script>
   <script src="app.js"></script>
 </body>
 </html>
