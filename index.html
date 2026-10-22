@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PayForge Test — A fully functional payment testing environment for developers and QA teams." />
+  <title>PayForge Test — Payment Testing Suite</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ─── Animated Background ─────────────────────────────── -->
+  <div class="bg-canvas">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+    <canvas id="particleCanvas"></canvas>
+  </div>
+
+  <!-- ─── Header ────────────────────────────────────────────── -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <div class="logo-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L25 8V20L14 26L3 20V8L14 2Z" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"/>
+            <rect x="8" y="12" width="12" height="8" rx="2" fill="url(#logoGrad)" opacity="0.9"/>
+            <line x1="8" y1="15" x2="20" y2="15" stroke="#0a0d1a" stroke-width="1.5"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="3" y1="2" x2="25" y2="26" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#4fc3f7"/>
+                <stop offset="1" stop-color="#a78bfa"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <span class="logo-name">PayForge</span>
+          <span class="logo-badge">TEST</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <span class="env-chip">
+          <span class="env-dot"></span>
+          Sandbox Mode
+        </span>
+        <button class="btn-ghost" id="btnTestCards">Test Cards</button>
+        <button class="btn-ghost" id="btnTransactionLog">Tx Log</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Main Layout ───────────────────────────────────────── -->
+  <main class="main-layout">
+
+    <!-- LEFT: Order Summary -->
+    <aside class="order-summary" id="orderSummary">
+      <div class="summary-header">
+        <h2>Order Summary</h2>
+        <button class="btn-icon" id="editOrder" title="Edit order">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+
+      <div class="order-items" id="orderItems">
+        <!-- Items injected by JS -->
+      </div>
+
+      <div class="promo-row">
+        <input type="text" id="promoInput" class="promo-input" placeholder="Promo / coupon code" />
+        <button class="btn-apply" id="applyPromo">Apply</button>
+      </div>
+      <div class="promo-feedback" id="promoFeedback"></div>
+
+      <div class="summary-totals">
+        <div class="total-row"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
+        <div class="total-row"><span>Discount</span><span id="discountRow" class="discount-val">-$0.00</span></div>
+        <div class="total-row"><span>Tax (8%)</span><span id="taxRow">$0.00</span></div>
+        <div class="total-row total-grand"><span>Total</span><span id="grandTotal">$0.00</span></div>
+      </div>
+
+      <div class="security-badges">
+        <div class="badge-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          SSL Secured
+        </div>
+        <div class="badge-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          PCI Compliant
+        </div>
+        <div class="badge-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          256-bit Enc.
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT: Payment Form -->
+    <section class="payment-section">
+
+      <!-- Contact Info -->
+      <div class="form-card" id="contactCard">
+        <div class="card-header">
+          <div class="step-badge">1</div>
+          <h3>Contact Information</h3>
+        </div>
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" placeholder="John" autocomplete="given-name"/>
+            <span class="field-error" id="firstNameErr"></span>
+          </div>
+          <div class="field-group">
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" placeholder="Doe" autocomplete="family-name"/>
+            <span class="field-error" id="lastNameErr"></span>
+          </div>
+        </div>
+        <div class="form-grid two-col">
+          <div class="field-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" placeholder="john@example.com" autocomplete="email"/>
+            <span class="field-error" id="emailErr"></span>
+          </div>
+          <div class="field-group">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" placeholder="+1 555 000 0000" autocomplete="tel"/>
+            <span class="field-error" id="phoneErr"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Address -->
+      <div class="form-card" id="billingCard">
+        <div class="card-header">
+          <div class="step-badge">2</div>
+          <h3>Billing Address</h3>
+        </div>
+        <div class="field-group">
+          <label for="address">Street Address</label>
+          <input type="text" id="address" placeholder="123 Main Street" autocomplete="street-address"/>
+          <span class="field-error" id="addressErr"></span>
+        </div>
+        <div class="form-grid three-col">
+          <div class="field-group">
+            <label for="city">City</label>
+            <input type="text" id="city" placeholder="New York" autocomplete="address-level2"/>
+            <span class="field-error" id="cityErr"></span>
+          </div>
+          <div class="field-group">
+            <label for="state">State / Region</label>
+            <input type="text" id="state" placeholder="NY" autocomplete="address-level1"/>
+          </div>
+          <div class="field-group">
+            <label for="zip">ZIP / Postal</label>
+            <input type="text" id="zip" placeholder="10001" autocomplete="postal-code"/>
+            <span class="field-error" id="zipErr"></span>
+          </div>
+        </div>
+        <div class="field-group">
+          <label for="country">Country</label>
+          <div class="select-wrap">
+            <select id="country" autocomplete="country">
+              <option value="">Select country…</option>
+              <option value="US" selected>United States</option>
+              <option value="GB">United Kingdom</option>
+              <option value="CA">Canada</option>
+              <option value="AU">Australia</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+              <option value="JP">Japan</option>
+              <option value="NG">Nigeria</option>
+              <option value="GH">Ghana</option>
+              <option value="ZA">South Africa</option>
+              <option value="IN">India</option>
+              <option value="BR">Brazil</option>
+            </select>
+            <svg class="select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <span class="field-error" id="countryErr"></span>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="form-card" id="paymentCard">
+        <div class="card-header">
+          <div class="step-badge">3</div>
+          <h3>Payment Method</h3>
+        </div>
+
+        <!-- Method Tabs -->
+        <div class="method-tabs" role="tablist">
+          <button class="method-tab active" id="tab-card" role="tab" aria-selected="true" data-method="card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Card
+          </button>
+          <button class="method-tab" id="tab-bank" role="tab" aria-selected="false" data-method="bank">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+            Bank Transfer
+          </button>
+          <button class="method-tab" id="tab-wallet" role="tab" aria-selected="false" data-method="wallet">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+            Wallet
+          </button>
+          <button class="method-tab" id="tab-crypto" role="tab" aria-selected="false" data-method="crypto">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 8h4a2 2 0 1 1 0 4H9v4h5a2 2 0 1 1 0 4"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="18" x2="12" y2="20"/></svg>
+            Crypto
+          </button>
+        </div>
+
+        <!-- ── CARD PANEL ── -->
+        <div class="method-panel active" id="panel-card">
+          <!-- 3D Card Preview -->
+          <div class="card-preview-wrap">
+            <div class="credit-card" id="creditCard">
+              <div class="card-face card-front">
+                <div class="card-front-top">
+                  <div class="card-chip">
+                    <div class="chip-lines">
+                      <div></div><div></div><div></div><div></div>
+                    </div>
+                  </div>
+                  <div class="card-network" id="cardNetwork">
+                    <svg class="network-visa" viewBox="0 0 100 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M38.5 3.2L33.6 28.8H27.7L32.6 3.2H38.5Z" fill="white"/>
+                      <path d="M64.3 3.9C63.2 3.5 61.5 3 59.4 3C53.6 3 49.5 5.9 49.5 10.1C49.5 13.2 52.4 14.9 54.6 15.9C56.9 16.9 57.7 17.6 57.7 18.5C57.7 19.9 56 20.6 54.4 20.6C52.2 20.6 51 20.3 48.9 19.4L48.1 19.1L47.2 24.4C48.6 25.1 51.1 25.6 53.7 25.6C59.9 25.6 63.8 22.8 63.8 18.3C63.8 15.8 62.1 13.9 58.7 12.3C56.7 11.3 55.5 10.6 55.5 9.7C55.5 8.8 56.6 7.9 58.9 7.9C60.8 7.9 62.2 8.3 63.3 8.7L63.9 9L64.3 3.9Z" fill="white"/>
+                      <path d="M79.1 3.2H74.4C73 3.2 71.9 3.6 71.3 5L62.7 28.8H68.9L70.2 25.1H77.7L78.5 28.8H84L79.1 3.2ZM71.8 20.3C72.3 18.9 74.3 13.5 74.3 13.5C74.3 13.5 74.9 11.9 75.2 10.9L75.7 13.2C75.7 13.2 77 19.4 77.3 20.3H71.8Z" fill="white"/>
+                      <path d="M30.3 3.2L24.6 20.5L24 17.4C22.9 13.9 19.5 10.1 15.8 8.1L21 28.8H27.3L36.6 3.2H30.3Z" fill="white"/>
+                      <path d="M18.9 3.2H9.3L9.2 3.7C16.8 5.6 22 10.4 24 17.4L22 5C21.7 3.7 20.5 3.3 18.9 3.2Z" fill="#F9A533"/>
+                    </svg>
+                    <svg class="network-mc hidden" viewBox="0 0 38 24" fill="none">
+                      <circle cx="15" cy="12" r="10" fill="#EB001B"/>
+                      <circle cx="23" cy="12" r="10" fill="#F79E1B"/>
+                      <path d="M19 5.8a10 10 0 0 1 0 12.4A10 10 0 0 1 19 5.8z" fill="#FF5F00"/>
+                    </svg>
+                    <svg class="network-amex hidden" viewBox="0 0 48 30" fill="none">
+                      <rect width="48" height="30" rx="4" fill="#007BC1"/>
+                      <text x="5" y="22" font-family="Arial" font-size="13" font-weight="bold" fill="white">AMEX</text>
+                    </svg>
+                    <svg class="network-discover hidden" viewBox="0 0 60 30" fill="none">
+                      <text x="2" y="22" font-family="Arial" font-size="10" font-weight="bold" fill="white">DISCOVER</text>
+                      <circle cx="48" cy="15" r="12" fill="#F76F20"/>
+                    </svg>
+                  </div>
+                </div>
+                <div class="card-number-display" id="cardNumberDisplay">•••• •••• •••• ••••</div>
+                <div class="card-bottom">
+                  <div>
+                    <div class="card-label">Card Holder</div>
+                    <div class="card-holder-display" id="cardHolderDisplay">FULL NAME</div>
+                  </div>
+                  <div>
+                    <div class="card-label">Expires</div>
+                    <div class="card-exp-display" id="cardExpDisplay">MM/YY</div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-face card-back">
+                <div class="card-stripe"></div>
+                <div class="card-sig-area">
+                  <div class="sig-lines"></div>
+                  <div class="cvv-box" id="cvvDisplay">•••</div>
+                </div>
+                <div class="card-back-network">
+                  <span style="font-size:10px;opacity:.6;color:#fff">Authorized Signature</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Form Fields -->
+          <div class="field-group">
+            <label for="cardNumber">Card Number</label>
+            <div class="input-icon-wrap">
+              <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric"/>
+              <span class="input-icon" id="cardTypeIcon">
+                <svg width="22" height="16" viewBox="0 0 24 18" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="22" height="16" rx="3"/><line x1="1" y1="6" x2="23" y2="6"/></svg>
+              </span>
+            </div>
+            <span class="field-error" id="cardNumberErr"></span>
+          </div>
+
+          <div class="field-group">
+            <label for="cardHolder">Cardholder Name</label>
+            <input type="text" id="cardHolder" placeholder="John Doe" autocomplete="cc-name"/>
+            <span class="field-error" id="cardHolderErr"></span>
+          </div>
+
+          <div class="form-grid two-col">
+            <div class="field-group">
+              <label for="cardExpiry">Expiry Date</label>
+              <input type="text" id="cardExpiry" placeholder="MM / YY" maxlength="7" inputmode="numeric"/>
+              <span class="field-error" id="cardExpiryErr"></span>
+            </div>
+            <div class="field-group">
+              <label for="cardCvv">
+                CVV
+                <button type="button" class="cvv-tooltip-btn" id="cvvHelpBtn" aria-label="CVV help">?</button>
+              </label>
+              <div class="input-icon-wrap">
+                <input type="password" id="cardCvv" placeholder="•••" maxlength="4" inputmode="numeric"/>
+                <button type="button" class="toggle-cvv-btn" id="toggleCvv" aria-label="Show/hide CVV">
+                  <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+              <div class="cvv-tooltip hidden" id="cvvTooltip">
+                The 3-digit code on the back of Visa/MC,<br>or 4-digit on the front of Amex.
+              </div>
+              <span class="field-error" id="cardCvvErr"></span>
+            </div>
+          </div>
+
+          <label class="checkbox-row" for="saveCard">
+            <input type="checkbox" id="saveCard" />
+            <span class="custom-check"></span>
+            <span>Save card for future payments</span>
+          </label>
+        </div>
+
+        <!-- ── BANK TRANSFER PANEL ── -->
+        <div class="method-panel" id="panel-bank">
+          <div class="bank-info-box">
+            <div class="bank-info-header">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Transfer Instructions
+            </div>
+            <p>Send your payment to the following account. Include your order reference in the transfer note.</p>
+          </div>
+
+          <div class="bank-details-grid">
+            <div class="bank-detail-item">
+              <span class="bdi-label">Bank Name</span>
+              <span class="bdi-value">PayForge Test Bank</span>
+              <button class="copy-btn" data-copy="PayForge Test Bank">Copy</button>
+            </div>
+            <div class="bank-detail-item">
+              <span class="bdi-label">Account Name</span>
+              <span class="bdi-value">PayForge Inc.</span>
+              <button class="copy-btn" data-copy="PayForge Inc.">Copy</button>
+            </div>
+            <div class="bank-detail-item">
+              <span class="bdi-label">Account Number</span>
+              <span class="bdi-value">1234-5678-9012</span>
+              <button class="copy-btn" data-copy="1234-5678-9012">Copy</button>
+            </div>
+            <div class="bank-detail-item">
+              <span class="bdi-label">Routing Number</span>
+              <span class="bdi-value">021000089</span>
+              <button class="copy-btn" data-copy="021000089">Copy</button>
+            </div>
+            <div class="bank-detail-item">
+              <span class="bdi-label">SWIFT / BIC</span>
+              <span class="bdi-value">PAYFTESTXXX</span>
+              <button class="copy-btn" data-copy="PAYFTESTXXX">Copy</button>
+            </div>
+            <div class="bank-detail-item">
+              <span class="bdi-label">Reference</span>
+              <span class="bdi-value" id="bankRef">PFT-20261022-4829</span>
+              <button class="copy-btn" id="copyBankRef">Copy</button>
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-top:16px">
+            <label for="bankName">Your Bank Name</label>
+            <input type="text" id="bankName" placeholder="e.g. Chase, Barclays…"/>
+          </div>
+          <div class="form-grid two-col">
+            <div class="field-group">
+              <label for="accountNumber">Account Number</label>
+              <input type="text" id="accountNumber" placeholder="Your account number"/>
+            </div>
+            <div class="field-group">
+              <label for="routingNumber">Routing / Sort Code</label>
+              <input type="text" id="routingNumber" placeholder="Routing number"/>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── WALLET PANEL ── -->
+        <div class="method-panel" id="panel-wallet">
+          <p class="panel-desc">Select your digital wallet to proceed with a one-click payment.</p>
+          <div class="wallet-grid">
+            <button class="wallet-btn" data-wallet="paypal" id="walletPaypal">
+              <svg width="26" height="26" viewBox="0 0 124 33" fill="none">
+                <path d="M46.2 8.7h-9a1.3 1.3 0 0 0-1.3 1.1L32.2 28a.8.8 0 0 0 .8.9h4.3a1.3 1.3 0 0 0 1.3-1.1l.9-5.9a1.3 1.3 0 0 1 1.3-1.1h2.8c5.8 0 9.2-2.8 10-8.3.4-2.4 0-4.3-1.1-5.6-1.3-1.5-3.5-2.2-6.3-2.2z" fill="#009cde"/>
+                <path d="M47.1 15.4c-.5 3.1-2.9 3.1-5.2 3.1h-1.3l.9-5.8a.8.8 0 0 1 .8-.7h.6c1.6 0 3.1 0 3.8.9.5.5.7 1.3.4 2.5z" fill="#012169"/>
+                <path d="M68 15.3h-4.3a.8.8 0 0 0-.8.7l-.2 1.2-.3-.5c-1-1.4-3.2-1.9-5.5-1.9-5.1 0-9.5 3.9-10.4 9.3-.4 2.7.2 5.3 1.7 7.1 1.4 1.6 3.4 2.3 5.8 2.3 4.1 0 6.4-2.7 6.4-2.7l-.2 1.2a.8.8 0 0 0 .8.9h3.9a1.3 1.3 0 0 0 1.3-1.1l2.3-15.6a.8.8 0 0 0-.5-.9z" fill="#009cde"/>
+              </svg>
+              PayPal
+              <span class="wallet-sub">Pay with PayPal account</span>
+            </button>
+            <button class="wallet-btn" data-wallet="apple" id="walletApple">
+              <svg width="22" height="26" viewBox="0 0 814 1000" fill="currentColor">
+                <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76.5 0-103.7 40.8-165.9 40.8s-105-37.5-155.5-127.4C46 790.7 0 663 0 541.8c0-207.5 135.4-317.5 269-317.5 70.1 0 128.4 46.4 172.5 46.4 42.8 0 110.1-49.2 191.4-49.2zm-81.9-135.8c-32.7 37.3-85.6 66.3-138.6 66.3-1.9 0-3.8-.1-5.7-.3 2.6-49.2 23.2-99.1 58.9-138.6 34.4-38 91.8-66.4 141.8-68.3 1.9 51.3-14.6 102.6-56.4 140.9z"/>
+              </svg>
+              Apple Pay
+              <span class="wallet-sub">Touch ID / Face ID</span>
+            </button>
+            <button class="wallet-btn" data-wallet="google" id="walletGoogle">
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+              </svg>
+              Google Pay
+              <span class="wallet-sub">Pay with Google</span>
+            </button>
+            <button class="wallet-btn" data-wallet="venmo" id="walletVenmo">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="#3D95CE">
+                <path d="M20.437 3c.734 1.22 1.063 2.474 1.063 4.058 0 5.064-4.325 11.643-7.835 16.268H5.77L2.5 3.85l7.087-.666 1.785 14.458C13.04 14.758 15.31 9.1 15.31 5.374c0-1.927-.33-3.22-.964-4.374z"/>
+              </svg>
+              Venmo
+              <span class="wallet-sub">Pay via Venmo</span>
+            </button>
+          </div>
+          <div class="wallet-selected-msg hidden" id="walletSelectedMsg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="walletSelectedName">PayPal</span> selected — click Pay Now to continue.
+          </div>
+        </div>
+
+        <!-- ── CRYPTO PANEL ── -->
+        <div class="method-panel" id="panel-crypto">
+          <p class="panel-desc">Send the exact amount to one of the addresses below. The payment will be confirmed after 2 network confirmations.</p>
+          <div class="crypto-tabs">
+            <button class="crypto-tab active" data-coin="btc">₿ Bitcoin</button>
+            <button class="crypto-tab" data-coin="eth">Ξ Ethereum</button>
+            <button class="crypto-tab" data-coin="usdt">₮ USDT</button>
+            <button class="crypto-tab" data-coin="usdc">$ USDC</button>
+          </div>
+          <div class="crypto-panel-inner" id="cryptoPanelInner">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Installments & Currency Toggle -->
+      <div class="form-card addon-card" id="addonCard">
+        <div class="addon-row">
+          <div class="addon-item">
+            <label class="addon-label" for="installments">Installments</label>
+            <div class="select-wrap">
+              <select id="installments">
+                <option value="1">Pay in Full</option>
+                <option value="3">3 Monthly Payments</option>
+                <option value="6">6 Monthly Payments</option>
+                <option value="12">12 Monthly Payments</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+          <div class="addon-item">
+            <label class="addon-label" for="currency">Currency</label>
+            <div class="select-wrap">
+              <select id="currency">
+                <option value="USD">🇺🇸 USD</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="GBP">🇬🇧 GBP</option>
+                <option value="CAD">🇨🇦 CAD</option>
+                <option value="AUD">🇦🇺 AUD</option>
+                <option value="NGN">🇳🇬 NGN</option>
+                <option value="GHS">🇬🇭 GHS</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="installment-display" id="installmentDisplay"></div>
+      </div>
+
+      <!-- Test Scenario Selector -->
+      <div class="form-card scenario-card" id="scenarioCard">
+        <div class="card-header">
+          <div class="step-badge accent">⚡</div>
+          <h3>Test Scenario</h3>
+        </div>
+        <p class="scenario-desc">Simulate specific payment outcomes for testing.</p>
+        <div class="scenario-grid" id="scenarioGrid">
+          <button class="scenario-btn active" data-scenario="success" id="sc-success">
+            <span class="sc-icon success">✓</span>
+            <span class="sc-label">Success</span>
+          </button>
+          <button class="scenario-btn" data-scenario="decline" id="sc-decline">
+            <span class="sc-icon decline">✗</span>
+            <span class="sc-label">Decline</span>
+          </button>
+          <button class="scenario-btn" data-scenario="insufficient" id="sc-insufficient">
+            <span class="sc-icon warn">!</span>
+            <span class="sc-label">Insufficient Funds</span>
+          </button>
+          <button class="scenario-btn" data-scenario="fraud" id="sc-fraud">
+            <span class="sc-icon fraud">⚠</span>
+            <span class="sc-label">Fraud Flag</span>
+          </button>
+          <button class="scenario-btn" data-scenario="3ds" id="sc-3ds">
+            <span class="sc-icon info">3D</span>
+            <span class="sc-label">3DS Auth</span>
+          </button>
+          <button class="scenario-btn" data-scenario="timeout" id="sc-timeout">
+            <span class="sc-icon warn">⏱</span>
+            <span class="sc-label">Timeout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Pay Button -->
+      <button class="pay-btn" id="payBtn">
+        <span class="pay-btn-text">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Pay <span id="payBtnAmount">$0.00</span>
+        </span>
+        <span class="pay-btn-loading hidden">
+          <span class="spinner"></span>
+          Processing…
+        </span>
+      </button>
+
+      <p class="pay-footnote">
+        By paying you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.
+        All transactions are simulated — no real charges apply.
+      </p>
+    </section>
+  </main>
+
+  <!-- ─── 3DS Modal ─────────────────────────────────────────── -->
+  <div class="modal-overlay hidden" id="modal3DS">
+    <div class="modal-box">
+      <div class="modal-header">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4fc3f7" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <h3>3D Secure Authentication</h3>
+      </div>
+      <p>Your bank requires additional verification. Enter the OTP sent to your phone.</p>
+      <div class="otp-wrap">
+        <input type="text" class="otp-input" id="otp1" maxlength="1" inputmode="numeric"/>
+        <input type="text" class="otp-input" id="otp2" maxlength="1" inputmode="numeric"/>
+        <input type="text" class="otp-input" id="otp3" maxlength="1" inputmode="numeric"/>
+        <input type="text" class="otp-input" id="otp4" maxlength="1" inputmode="numeric"/>
+        <input type="text" class="otp-input" id="otp5" maxlength="1" inputmode="numeric"/>
+        <input type="text" class="otp-input" id="otp6" maxlength="1" inputmode="numeric"/>
+      </div>
+      <p class="otp-hint">Use code <strong>123456</strong> to pass, any other to fail.</p>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="cancel3DS">Cancel</button>
+        <button class="pay-btn small" id="confirm3DS">Verify</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Success Modal ─────────────────────────────────────── -->
+  <div class="modal-overlay hidden" id="modalSuccess">
+    <div class="modal-box success-modal">
+      <div class="success-anim">
+        <svg class="checkmark" viewBox="0 0 52 52">
+          <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+          <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+        </svg>
+      </div>
+      <h2>Payment Successful!</h2>
+      <p id="successMsg">Your payment has been processed.</p>
+      <div class="success-details" id="successDetails"></div>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="downloadReceipt">⬇ Download Receipt</button>
+        <button class="pay-btn small" id="newPayment">New Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Failure Modal ─────────────────────────────────────── -->
+  <div class="modal-overlay hidden" id="modalFail">
+    <div class="modal-box fail-modal">
+      <div class="fail-icon">✗</div>
+      <h2>Payment Failed</h2>
+      <p id="failMsg">Your payment could not be processed.</p>
+      <div class="fail-code" id="failCode"></div>
+      <div class="modal-actions">
+        <button class="btn-ghost" id="retryPayment">Try Again</button>
+        <button class="pay-btn small" id="changeMethod">Change Method</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Test Cards Drawer ─────────────────────────────────── -->
+  <div class="drawer-overlay hidden" id="testCardsOverlay">
+    <div class="drawer" id="testCardsDrawer">
+      <div class="drawer-header">
+        <h3>Test Card Numbers</h3>
+        <button class="btn-icon close-drawer" id="closeTestCards">✕</button>
+      </div>
+      <div class="drawer-body">
+        <p class="drawer-desc">Click any card to auto-fill the payment form.</p>
+        <div class="test-card-list" id="testCardList">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Transaction Log Drawer ───────────────────────────── -->
+  <div class="drawer-overlay hidden" id="txLogOverlay">
+    <div class="drawer" id="txLogDrawer">
+      <div class="drawer-header">
+        <h3>Transaction Log</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-ghost small" id="clearTxLog">Clear</button>
+          <button class="btn-icon close-drawer" id="closeTxLog">✕</button>
+        </div>
+      </div>
+      <div class="drawer-body">
+        <div class="tx-list" id="txList">
+          <div class="tx-empty">No transactions yet.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CVV Tooltip ───────────────────────────────────────── -->
+
+  <!-- ─── Toast Notification ───────────────────────────────── -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
