@@ -457,10 +457,10 @@ function validateForm() {
 let whopCheckoutInstance = null;
 
 function mountWhopElements(planId) {
-  const container = $('checkout-checkout');
+  const container = $('whop-checkout');
   if (!container) return;
 
-  const plan = planId || $('whopPlanInput')?.value.trim();
+  const plan = planId || $('whopPlanInput')?.value.trim() || 'plan_Z6DxtKInhQkbv';
   if (!plan) {
     showToast('Please enter a Whop plan ID (e.g. plan_xxxx)', 'warn');
     $('whopPlanInput')?.focus();
@@ -494,8 +494,8 @@ function mountWhopElements(planId) {
       }
     });
 
-    whopCheckoutInstance.create('checkout').mount('#checkout-checkout');
-    showToast('Whop Elements mounted successfully!', 'success');
+    whopCheckoutInstance.create('checkout').mount('#whop-checkout');
+    showToast('Whop Elements mounted: ' + plan, 'success');
   } catch (err) {
     console.error('[Whop Elements Mount Error]:', err);
     showToast('Failed to mount Whop Elements: ' + err.message, 'error');
@@ -796,6 +796,10 @@ function switchMethod(method) {
   });
   $$('.method-panel').forEach(p => p.classList.remove('active'));
   $(`panel-${method}`)?.classList.add('active');
+
+  if (method === 'whop' && state.whopMode === 'embed' && !whopCheckoutInstance) {
+    mountWhopElements('plan_Z6DxtKInhQkbv');
+  }
 }
 
 // ─── Scenario ────────────────────────────────────────────────────

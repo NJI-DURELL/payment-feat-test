@@ -470,20 +470,20 @@
             <!-- Embedded Mode Container -->
             <div id="whopEmbedSection" class="whop-section">
               <div class="whop-plan-config">
-                <label for="whopPlanInput">Plan ID (from Whop Dashboard &gt; Products &gt; Plans)</label>
+                <label for="whopPlanInput">Plan ID (Active: <code>plan_Z6DxtKInhQkbv</code>)</label>
                 <div class="whop-input-row">
-                  <input type="text" id="whopPlanInput" class="promo-input" placeholder="e.g. plan_xxxxxxxxxxxx" />
+                  <input type="text" id="whopPlanInput" class="promo-input" value="plan_Z6DxtKInhQkbv" placeholder="e.g. plan_xxxxxxxxxxxx" />
                   <button type="button" class="btn-apply" id="btnMountWhopElement">Mount</button>
                 </div>
               </div>
               
               <!-- Container where Whop Elements mounts -->
-              <div id="checkout-checkout" class="whop-elements-mount">
+              <div id="whop-checkout" class="whop-elements-mount">
                 <div class="whop-placeholder" id="whopPlaceholder">
                   <div class="whop-ph-icon">⚡</div>
                   <div class="whop-ph-title">Whop Elements Surface</div>
                   <p class="whop-ph-desc">
-                    Enter your <code>plan_...</code> above and click <strong>Mount</strong> to load the in-page checkout, or click <strong>Pay</strong> below for hosted checkout.
+                    Click <strong>Mount</strong> above to load the live Whop checkout for <code>plan_Z6DxtKInhQkbv</code> right here!
                   </p>
                 </div>
               </div>
@@ -508,6 +508,13 @@
                   <span class="whop-feat-icon">🪙</span>
                   <span>Crypto &amp; Global Currencies</span>
                 </div>
+              </div>
+
+              <div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+                <a href="https://whop.com/checkout/plan_Z6DxtKInhQkbv" target="_blank" rel="noopener noreferrer" class="btn-apply" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;">
+                  <span>Direct Whop Checkout</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
               </div>
 
               <div class="whop-notice">
